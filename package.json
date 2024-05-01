@@ -33,8 +33,21 @@
         "type": "array",
         "default": [],
         "description": "Specify import categories for sorting."
+      },
+      "sortpythonlib.remove_unused_libs": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether to remove unused libraries"
       }
-    }
+    },
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "settings.json"
+        ],
+        "url": "./schemas/sortpythonlib-schema.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
