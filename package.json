@@ -3,9 +3,9 @@
   "displayName": "sort python lib",
   "description": "",
   "publisher": "Iuri Viveiros",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
@@ -45,7 +45,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.71.0",
+    "@types/vscode": "^1.85.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@typescript-eslint/eslint-plugin": "^6.15.0",

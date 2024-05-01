@@ -2,3 +2,4 @@ node_modules
 .vscode
 .vscodeignore
 out
+package-lock.json
