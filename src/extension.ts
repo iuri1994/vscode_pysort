@@ -4,10 +4,12 @@ import * as vscode from 'vscode';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
+var text_all = '';
+var remove_not_used_import = false;
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let disposable = vscode.commands.registerCommand('sortpythonlib.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('sortpythonlib.sortpython', () => {
         const editor = vscode.window.activeTextEditor;
 
         if (editor) {
@@ -30,9 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
 function sortPythonImports(text: string): string {
     const pythonCode = text.split('\n');
 
-    // const categories = ['core/logic_flow', 'core/crud', 'SEC.sec_core', 'SEC.sec_admin', 'SEC.sec_client_manager', 'SEC.sec_end_user'];
     const categories = vscode.workspace.getConfiguration().get('sortpythonlib.categories', []);
-
+    remove_not_used_import = vscode.workspace.getConfiguration().get('sortpythonlib.remove_unused_libs', false);
+    
     const importLines: string[] = [];
     const nonImportLines: string[] = [];
     const encoding_line: string[] = [];
@@ -64,9 +66,6 @@ function sortPythonImports(text: string): string {
         }
 
     }
-
-    const sortedImports = sortImports(importLines, categories);
-
     let index_non_import_line = 0;
     for (index_non_import_line = 0; index_non_import_line < nonImportLines.length; index_non_import_line++) {
         if (nonImportLines[index_non_import_line] !== '\r') {
@@ -75,6 +74,11 @@ function sortPythonImports(text: string): string {
     }
 
     let nonImportLines_formated = nonImportLines.splice(index_non_import_line);
+
+    text_all = nonImportLines_formated.join('\n');
+
+    const sortedImports = sortImports(importLines, categories);
+
 
     return `${encoding_line}\n${sortedImports}\n\n\n${nonImportLines_formated.join('\n')}`;
 }
@@ -94,9 +98,39 @@ function splitCodeLines(code: string, maxLength: number): string {
 
     let modified_array = [];
     let line = '';
+    let import_exist = false;
+
+    let all_imports = [];
+    let used_imports = [];
+
+    let import_all = false;
 
     for (let i=0; i < words.length; i++ ) {
         let word = words[i];
+        if (word === 'import') {
+            import_exist = true;
+        }
+
+        if (word === '*') {
+            import_all = true;
+        }
+
+
+
+        if (remove_not_used_import && import_exist && word !== 'import' && word !== '*') {
+            all_imports.push(word);
+            let new_word = word.replace(',', '');
+            const pattern = new RegExp(`\\b${new_word}\\b`);
+            pattern.lastIndex = 0;
+            let matchCount = 0;
+            let match: RegExpExecArray | null;
+            if ((match = pattern.exec(text_all)) !== null) {
+                used_imports.push(word);
+            } else {
+                continue;
+            }
+        }
+
         if (line === '' || line === '\t') {
             line += word;
         } else {
@@ -120,8 +154,15 @@ function splitCodeLines(code: string, maxLength: number): string {
         modified_array.push(line);
     }
 
-    // Join the lines with a continuation character (\)
-    const modifiedCode = modified_array.join('\\\n');
+    if (remove_not_used_import && used_imports.length === 0 && !import_all) {
+        return '';
+    }
+
+    var modifiedCode = modified_array.join('\\\n').trimEnd();
+    if (modifiedCode[modifiedCode.length - 1] === ',') {
+        // Remove the last character (comma)
+        return modifiedCode.slice(0, -1);
+    }
     return modifiedCode;
 }
 
@@ -132,7 +173,9 @@ function sortImports(importLines: string[], categories: string[]): string {
     for (const importLine of importLines) {
         const categoryIndex = getCategoryIndex(importLine, categories);
         let import_line_formated = splitCodeLines(importLine, 100);
-        sortedArrays[categoryIndex].push(import_line_formated);
+        if (import_line_formated !== '') {
+            sortedArrays[categoryIndex].push(import_line_formated);
+        }        
     }
 
     for (const array of sortedArrays) {

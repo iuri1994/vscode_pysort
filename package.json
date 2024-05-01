@@ -3,7 +3,7 @@
   "displayName": "sort python lib",
   "description": "",
   "publisher": "Iuri Viveiros",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -15,7 +15,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "sortpythonlib.helloWorld",
+        "command": "sortpythonlib.sortpython",
         "title": "Sort Python Libs"
       }
     ],
@@ -23,7 +23,7 @@
         "editor/context": [
             {
                 "when": "editorTextFocus && resourceLangId == 'python'",
-                "command": "sortpythonlib.helloWorld",
+                "command": "sortpythonlib.sortpython",
                 "group": "1_modification"
             }
         ]
