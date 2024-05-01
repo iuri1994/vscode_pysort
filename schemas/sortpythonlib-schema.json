@@ -1,0 +1,19 @@
+{
+    "type": "object",
+    "properties": {
+      "sortpythonlib": {
+        "type": "object",
+        "properties": {
+          "remove_unused_libs": {
+            "type": "boolean",
+            "description": "Whether to remove unused libraries"
+          },
+          "categories": {
+            "type": "array",
+            "description": "Categories for sorting imports"
+          }
+        }
+      }
+    }
+  }
+  

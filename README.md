@@ -7,6 +7,7 @@ Python Imports Sorter is a Visual Studio Code extension that helps you organize 
 - **Import Sorting:** Automatically organizes and sorts import statements in your Python files.
 - **Custom Categories:** Allows you to define custom categories for sorting, making it easy to group imports based on your project's structure.
 - **Priority Sorting:** Prioritizes 'import' statements over 'from' statements during sorting.
+- **Remove not used imports:** Removes imports that are not being used
 
 ## Installation
 
@@ -14,20 +15,10 @@ Python Imports Sorter is a Visual Studio Code extension that helps you organize 
 
 ## Configuration
 
-Customize your import sorting preferences by modifying the `categories` array in the `settings.json` file:
-
-```json
-{
-    "sortpythonlib.categories": [
-        "SEC.core.logic_flow",
-        "SEC.core.crud",
-        "SEC.sec_core",
-        "SEC.sec_admin",
-        "SEC.sec_client_manager",
-        "SEC.sec_end_user"
-    ]
-}
-```
+| Configuration | Description | Example  | Default |
+|---|---|---|---|
+| sortpythonlib.categories | Customize your import sorting preferences | "sortpythonlib.categories": [ <br>  "path1",<br>  "path2",<br>  "path3" ] | [ ] |
+| sortpythonlib.remove_unused_libs | If active remove unused imports | "sortpythonlib.remove_unused_libs": true | false |
 
 
 ## Usage
