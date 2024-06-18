@@ -37,31 +37,37 @@ function sortPythonImports(text: string): string {
     
     const importLines: string[] = [];
     const nonImportLines: string[] = [];
-    const encoding_line: string[] = [];
 
     let currentImportBlock: string[] = [];
     let inImportBlock = false;
 
-    for (const line of pythonCode) {
+    let first_import_line = null;
+
+    let before_was_import = false;
+
+    for (const [index, line] of pythonCode.entries()) {
         const trimmedLine = line.trim();
 
-        if (trimmedLine.startsWith('# -*- coding:')) {
-            encoding_line.push(trimmedLine);
-        } else {
-            if ((trimmedLine.startsWith('from ') || trimmedLine.startsWith('import ') || trimmedLine.startsWith('#from ') || trimmedLine.startsWith('#import ')) && !inImportBlock) {
-                inImportBlock = true;
+        if ((trimmedLine.startsWith('from ') || trimmedLine.startsWith('import ') || trimmedLine.startsWith('#from ') || trimmedLine.startsWith('#import ')) && !inImportBlock && !line.startsWith('\t') ) {
+            inImportBlock = true;
+            if (first_import_line === null) {
+                first_import_line = index;
             }
-    
-            if (inImportBlock) {
-                currentImportBlock.push(line);
-    
-                if (!trimmedLine.endsWith('\\')) {
-                    inImportBlock = false;
-                    importLines.push(currentImportBlock.join('\n'));
-                    currentImportBlock = [];
-                }
-            } else {
+            before_was_import = true;
+        }
+
+        if (inImportBlock) {
+            currentImportBlock.push(line);
+
+            if (!trimmedLine.endsWith('\\')) {
+                inImportBlock = false;
+                importLines.push(currentImportBlock.join('\n'));
+                currentImportBlock = [];
+            }
+        } else {
+            if (!(line === '\r' && before_was_import)) {
                 nonImportLines.push(line);
+                before_was_import = false;
             }
         }
 
@@ -77,10 +83,14 @@ function sortPythonImports(text: string): string {
 
     text_all = nonImportLines_formated.join('\n');
 
-    const sortedImports = sortImports(importLines, categories);
+    let sortedImports = sortImports(importLines, categories) + '\n\n';
 
+    if (first_import_line !== null) {
+        nonImportLines_formated.splice(first_import_line, 0, sortedImports);
+    }
 
-    return `${encoding_line}\n${sortedImports}\n\n\n${nonImportLines_formated.join('\n')}`;
+    return `${nonImportLines_formated.join('\n')}`;
+    // return `${sortedImports}\n\n\n${nonImportLines_formated.join('\n')}`;
 }
 
 function splitCodeLines(code: string, maxLength: number): string {
