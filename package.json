@@ -3,7 +3,7 @@
   "displayName": "sort python lib",
   "description": "",
   "publisher": "Iuri Viveiros",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -36,7 +36,7 @@
       },
       "sortpythonlib.remove_unused_libs": {
         "type": "boolean",
-        "default": true,
+        "default": false,
         "description": "Whether to remove unused libraries"
       }
     },
